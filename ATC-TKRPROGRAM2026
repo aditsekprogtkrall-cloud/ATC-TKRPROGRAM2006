@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATC - TKR Program SMK Karya Bahana Mandiri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Library for Export PDF and Image -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        
+        .section-hidden { display: none !important; }
+        .nav-btn.active { border-bottom: 4px solid #facc15; background: rgba(255,255,255,0.1); font-weight: 800; }
+
+        /* Style Running Text Modern & Profesional 12pt */
+        .marquee-wrapper { 
+            width: 100%; 
+            overflow: hidden; 
+            background: linear-gradient(to right, #1e3a8a, #1e40af, #1e3a8a); 
+            padding: 12px 0; 
+            border-bottom: 3px solid #facc15; 
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+        }
+        .marquee-text { 
+            white-space: nowrap; 
+            display: inline-block; 
+            padding-left: 100%; 
+            animation: marquee 50s linear infinite; 
+            color: #ffff00; 
+            font-family: 'Inter', sans-serif;
+            font-size: 12pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-shadow: 0 0 8px rgba(255, 255, 0, 0.4);
+        }
+        .marquee-text i { margin: 0 15px; color: #fff; opacity: 0.8; font-size: 10pt; }
+        @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+
+        @media print { 
+            .no-print { display: none !important; } 
+            body { background: white !important; padding: 0; margin: 0; }
+            .print-area { width: 100%; margin: 0; padding: 0; }
+            table { font-size: 6.5pt !important; border-collapse: collapse; width: 100%; page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            th, td { border: 0.5pt solid black !important; padding: 2px !important; }
+        }
+
+        .status-badge {
+            font-size: 8px; font-weight: 800; padding: 2px 8px; border-radius: 100px;
+            display: inline-flex; align-items: center; gap: 4px; text-transform: uppercase;
+        }
+        .badge-active { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .badge-secure { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+        .badge-hacker { background: #1a202c; color: #ffffff; border: 1px solid #4a5568; }
+        .blink { animation: blink-animation 1s steps(5, start) infinite; }
+        @keyframes blink-animation { to { visibility: hidden; } }
+
+        /* Card Ujian Style */
+        .kartu-ujian {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            border: 2px solid #1e3a8a;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .kartu-header { background: #1e3a8a; color: white; padding: 15px; text-align: center; }
+        .kartu-body { padding: 20px; }
+        .kartu-row { display: flex; border-bottom: 1px solid #e2e8f0; padding: 8px 0; font-size: 13px; }
+        .kartu-label { width: 120px; font-weight: 800; color: #64748b; text-transform: uppercase; font-size: 10px; }
+        .kartu-value { flex: 1; font-weight: 700; color: #1e293b; }
+        
+        /* Table highlight */
+        .time-label { font-weight: 900; color: #1e3a8a; font-size: 8.5pt; display: block; line-height: 1; }
+        .session-title { font-weight: 900; color: #000; text-transform: uppercase; font-size: 7.5pt; margin-bottom: 2px; }
+        .foto-3x4 { width: 120px; height: 160px; object-fit: cover; border-radius: 8px; border: 3px solid #fff; filter: grayscale(100%); transition: 0.3s; }
+        .foto-3x4:hover { filter: grayscale(0%); transform: scale(1.05); }
+        .misi-card { background: white; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 0.75rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02); margin-bottom: 0.75rem; text-align: center; font-size: 0.875rem; color: #4b5563; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-slate-900">
+
+    <!-- HEADER -->
+    <header class="bg-blue-900 text-white shadow-xl sticky top-0 z-50 no-print">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-4">
+                <img src="https://iili.io/qY0WbnI.md.png" alt="Logo SMK" class="w-14 h-14 bg-white rounded-full p-1">
+                <img src="https://iili.io/qY0hWdu.md.png" alt="Logo Jurusan" class="w-14 h-14 bg-white rounded-full p-1">
+                <div class="border-l-2 border-blue-400 pl-4 text-left">
+                    <h1 class="text-xl md:text-2xl font-black tracking-tighter uppercase">ATC-TKR PROGRAM</h1>
+                    <p class="text-[10px] md:text-xs font-bold text-blue-200 uppercase tracking-widest text-left">SMK KARYA BAHANA MANDIRI • TEKNIK KENDARAAN RINGAN</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-col items-center md:items-end">
+                <div class="bg-blue-950/50 px-4 py-1.5 rounded-xl border border-white/10 mb-2 shadow-inner min-w-[300px]">
+                    <p class="font-bold text-yellow-400 text-sm tracking-tight text-center md:text-right" id="current-time-full"></p>
+                </div>
+                <div class="flex flex-wrap justify-center md:justify-end gap-2">
+                    <span class="status-badge badge-active"><i class="fas fa-database blink"></i> Penyimpanan Aktif</span>
+                    <span class="status-badge badge-secure"><i class="fas fa-shield-alt"></i> Anti Kecurangan</span>
+                    <span class="status-badge badge-hacker"><i class="fas fa-user-secret"></i> Anti Hacker</span>
+                </div>
+            </div>
+        </div>
+
+        <nav class="bg-blue-950 overflow-x-auto flex no-print">
+            <div class="container mx-auto flex whitespace-nowrap">
+                <button onclick="switchTab('beranda', this)" class="nav-btn active px-5 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-blue-800 transition">Beranda</button>
+                <button onclick="switchTab('mapel-produktif', this)" class="nav-btn px-5 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-blue-800 transition text-center">Mapel Produktif</button>
+                <button onclick="switchTab('mon-guru', this)" class="nav-btn px-5 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-blue-800 transition text-center">Monitoring Guru</button>
+                <button onclick="switchTab('mon-pkl', this)" class="nav-btn px-5 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-blue-800 transition text-center">Monitoring PKL</button>
+                <button onclick="switchTab('form-pkl', this)" class="nav-btn px-5 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-blue-800 transition text-center">Form PKL</button>
+                <button onclick="switchTab('jadwal-mapel', this)" class="nav-btn px-5 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-blue-800 transition text-center">Jadwal Mapel</button>
+                <button onclick="switchTab('jadwal-ukk', this)" class="nav-btn px-5 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-blue-800 transition text-yellow-400 font-black text-center">Jadwal UKK</button>
+                <button onclick="switchTab('rekap-kehadiran', this)" class="nav-btn px-5 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-blue-800 transition text-center">Kehadiran</button>
+                <button onclick="switchTab('data-raport', this)" class="nav-btn px-5 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-blue-800 transition text-center">Raport</button>
+                <button onclick="switchTab('keterangan', this)" class="nav-btn px-5 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-blue-800 transition text-center text-center">Keterangan</button>
+            </div>
+        </nav>
+        <div class="marquee-wrapper"><span class="marquee-text" id="running-text"></span></div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+
+        <!-- 1. BERANDA -->
+        <section id="beranda" class="tab-content block no-print space-y-12">
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+                <div class="bg-blue-600 py-6 text-white text-center">
+                    <h2 class="text-3xl font-extrabold tracking-wide uppercase">Visi dan Misi</h2>
+                    <p class="text-yellow-400 font-bold mt-1 text-base tracking-wider uppercase">Teknik Kendaraan Ringan</p>
+                </div>
+                <div class="p-8 space-y-10 max-w-5xl mx-auto">
+                    <div class="text-center">
+                        <h3 class="text-xl font-black text-yellow-500 uppercase mb-4"><i class="fas fa-eye mr-2"></i> Visi</h3>
+                        <div class="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6 shadow-sm">
+                            <p class="text-gray-800 font-bold italic text-lg leading-relaxed text-center">"Menciptakan siswa berakhlak, berprestasi dan siap kerja"</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black text-yellow-500 uppercase text-center mb-4"><i class="fas fa-bullseye mr-2"></i> Misi</h3>
+                        <div class="space-y-2 text-center">
+                            <div class="misi-card">Meningkatkan profesionalisme dan akuntabilitas sebagai lembaga pendidikan dan pelatihan kejuruan.</div>
+                            <div class="misi-card">Melaksanakan sistem pendidikan dan pelatihan berbasis kompetensi dengan memanfaatkan teknologi rekayasa sebagai teknologi terapan dan jasa unit produksi secara optimal sesuai dengan potensi yang dimiliki.</div>
+                            <div class="misi-card">Mengupayakan mutu layanan pendidikan kejuruan sesuai dengan tuntutan masyarakat dan dunia usaha/dunia industri.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <h2 class="text-3xl font-black text-slate-800 border-b-4 border-blue-600 inline-block pb-2 uppercase tracking-tighter">Struktur Jurusan TKR</h2>
+            </div>
+            
+            <div class="flex flex-col md:flex-row justify-center items-center gap-8 text-center mb-12">
+                <div class="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-blue-600 w-64 text-center">
+                    <img src="https://iili.io/qY1lHEG.md.jpg" class="foto-3x4 mx-auto mb-4" alt="Kaprog">
+                    <h3 class="font-bold text-slate-800 text-sm">H. Irwan Rahmat, S.T, Gr</h3>
+                    <p class="text-blue-600 text-[10px] font-bold uppercase mt-1">Kepala Program TKR</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-emerald-500 w-64 text-center">
+                    <img src="https://iili.io/qY11HJ4.md.jpg" class="foto-3x4 mx-auto mb-4" alt="Sekjur">
+                    <h3 class="font-bold text-slate-800 text-sm">Adhitya Anugrah Rizki, S.T, Gr</h3>
+                    <p class="text-emerald-600 text-[10px] font-bold uppercase mt-1">Sekretaris Jurusan</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <div class="bg-white p-4 rounded-xl shadow-md border-t-4 border-orange-500"><img src="https://iili.io/qY1VCZB.md.jpg" class="foto-3x4 mx-auto mb-3 font-bold text-center"><h3 class="font-bold text-xs">Firmansyah, S.T, Gr</h3><p class="text-orange-600 text-[9px] font-bold uppercase mt-1">Instruktur TKR</p></div>
+                <div class="bg-white p-4 rounded-xl shadow-md border-t-4 border-blue-500 text-center"><img src="https://iili.io/qY1hlnV.jpg" class="foto-3x4 mx-auto mb-3 font-bold text-center"><h3 class="font-bold text-xs">Syaiful Hadi, S.T, Gr</h3><p class="text-blue-500 text-[9px] font-bold uppercase mt-1">Instruktur TKR</p></div>
+                <div class="bg-white p-4 rounded-xl shadow-md border-t-4 border-indigo-500 text-center"><img src="https://iili.io/qY1jHDx.md.jpg" class="foto-3x4 mx-auto mb-3 font-bold text-center"><h3 class="font-bold text-xs text-center">Defa Andrian, S.T, Gr</h3><p class="text-indigo-600 text-[9px] font-bold uppercase mt-1">Instruktur TKR</p></div>
+                <div class="bg-white p-4 rounded-xl shadow-md border-t-4 border-purple-500 text-center text-center"><img src="https://iili.io/qY1jDsp.md.jpg" class="foto-3x4 mx-auto mb-3 font-bold text-center text-center"><h3 class="font-bold text-xs text-center text-center">Agus Rizky, S.T</h3><p class="text-purple-600 text-[9px] font-bold uppercase mt-1 text-center text-center">Instruktur TKR</p></div>
+            </div>
+
+            <div class="mt-12 text-left">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="h-8 w-2 bg-yellow-400 rounded-full"></div>
+                    <h3 class="text-2xl font-black text-slate-800 uppercase">Dokumentasi Praktik</h3>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
+                    <img src="https://iili.io/qY1ejCx.md.jpg" class="w-full h-44 object-cover rounded-xl shadow grayscale hover:grayscale-0 transition duration-500" alt="Praktik 1">
+                    <img src="https://iili.io/qY1OaJ1.md.jpg" class="w-full h-44 object-cover rounded-xl shadow grayscale hover:grayscale-0 transition duration-500" alt="Praktik 2">
+                    <img src="https://iili.io/qY1OMsR.md.jpg" class="w-full h-44 object-cover rounded-xl shadow grayscale hover:grayscale-0 transition duration-500" alt="Praktik 3">
+                    <img src="https://iili.io/qY1OGWv.md.jpg" class="w-full h-44 object-cover rounded-xl shadow grayscale hover:grayscale-0 transition duration-500" alt="Praktik 4">
+                    <img src="https://iili.io/qY1O0ba.md.jpg" class="w-full h-44 object-cover rounded-xl shadow grayscale hover:grayscale-0 transition duration-500" alt="Praktik 5">
+                    <img src="https://iili.io/qY1OWfp.md.jpg" class="w-full h-44 object-cover rounded-xl shadow grayscale hover:grayscale-0 transition duration-500" alt="Praktik 6">
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. JADWAL UKK -->
+        <section id="jadwal-ukk" class="tab-content section-hidden">
+            <!-- Form Identitas Login Siswa -->
+            <div id="login-ukk-siswa" class="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-2xl mx-auto border border-gray-100 no-print">
+                <div class="bg-blue-700 p-6 text-white text-center">
+                    <h3 class="text-2xl font-black uppercase tracking-tight">Identitas Peserta UKK</h3>
+                    <p class="text-blue-100 text-xs mt-1">Sistem Jadwal UKK TKR - SMK KBM 1 Bekasi</p>
+                </div>
+                <div class="p-8 space-y-5 bg-slate-50/30">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-1 text-left">Nama Lengkap Siswa</label>
+                            <input type="text" id="input-nama-ukk" placeholder="Tulis Nama Anda..." class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 outline-none focus:border-blue-500 font-bold uppercase">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-1 text-left">Kelas (XII TKR)</label>
+                            <select id="input-kelas-ukk" onchange="updateWaliKelas(this.value)" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 outline-none focus:border-blue-500 font-bold text-slate-700">
+                                <option value="">-- Pilih Kelas --</option>
+                                <option value="XII TKR 1">XII TKR 1</option>
+                                <option value="XII TKR 2">XII TKR 2</option>
+                                <option value="XII TKR 3">XII TKR 3</option>
+                                <option value="XII TKR 4">XII TKR 4</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-1 text-left">Wali Kelas</label>
+                            <input type="text" id="display-wali-ukk" readonly class="w-full px-4 py-3 rounded-xl border-2 border-slate-100 bg-slate-100 outline-none font-bold text-blue-800" placeholder="Pilih Kelas Dahulu">
+                        </div>
+                    </div>
+                    <button onclick="handleLoginUKK()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl shadow-xl transition transform active:scale-95 uppercase tracking-widest text-center">
+                        <i class="fas fa-list-alt mr-2"></i> Lihat Jadwal Ujian
+                    </button>
+                </div>
+            </div>
+
+            <div id="content-jadwal-ukk" class="section-hidden space-y-12">
+                <!-- BAGIAN KHUSUS: KARTU PESERTA -->
+                <div class="flex flex-col items-center space-y-6">
+                    <h3 class="text-2xl font-black text-slate-800 uppercase tracking-tighter border-b-4 border-yellow-500 pb-1 text-center">Waktu Pelaksanaan Ujian (Khusus)</h3>
+                    
+                    <div id="kartu-khusus-area" class="kartu-ujian">
+                        <div class="kartu-header">
+                            <h4 class="font-black text-sm uppercase tracking-widest">KARTU PESERTA UKK 2026</h4>
+                            <p class="text-[9px] opacity-80 uppercase">Teknik Kendaraan Ringan Otomotif</p>
+                        </div>
+                        <div class="kartu-body">
+                            <div class="kartu-row"><div class="kartu-label text-left">NAMA</div><div class="kartu-value text-left" id="card-name">-</div></div>
+                            <div class="kartu-row"><div class="kartu-label text-left">NIPD</div><div class="kartu-value text-left" id="card-nipd">-</div></div>
+                            <div class="kartu-row"><div class="kartu-label text-left">KELAS</div><div class="kartu-value text-left" id="card-kelas">-</div></div>
+                            <div class="kartu-row"><div class="kartu-label text-left">WALI KELAS</div><div class="kartu-value text-left text-[11px]" id="card-wali">-</div></div>
+                            <div class="bg-blue-50 p-4 rounded-xl mt-4 border border-blue-100 text-left">
+                                <div class="kartu-row border-none"><div class="kartu-label">HARI / TGL</div><div class="kartu-value text-blue-800" id="card-day">-</div></div>
+                                <div class="kartu-row border-none"><div class="kartu-label text-blue-600">SESI</div><div class="kartu-value text-xl font-black text-blue-600" id="card-sesi">-</div></div>
+                                <div class="kartu-row border-none"><div class="kartu-label">WAKTU</div><div class="kartu-value text-red-600 font-black text-lg" id="card-time">-</div></div>
+                                <div class="kartu-row border-none"><div class="kartu-label">RUANG</div><div class="kartu-value uppercase">BENGKEL TKR UTAMA</div></div>
+                            </div>
+                            <div class="mt-4 pt-2 border-t border-dashed">
+                                <p class="text-[8px] font-bold text-slate-400 uppercase text-center">Tanda Tangan Penguji Terlampir di Berkas Fisik</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="downloadCard()" class="bg-blue-600 text-white px-6 py-2.5 rounded-full font-bold uppercase text-xs shadow-lg hover:bg-blue-700 transition">Download Kartu</button>
+                </div>
+
+                <!-- BAGIAN UMUM: JADWAL GLOBAL -->
+                <div class="bg-white p-6 rounded-2xl shadow-xl border-t-8 border-slate-800">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 no-print gap-4 text-left">
+                        <div class="text-left">
+                            <h2 class="text-2xl font-black text-slate-800 uppercase tracking-tighter text-left">Jadwal UKK (Umum / Global)</h2>
+                            <p class="text-xs font-black text-blue-600 uppercase mt-1 tracking-wider text-left">STATUS : 06 APRIL 2026 S/D 16 APRIL 2026</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="downloadJPGGlobal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase shadow hover:bg-blue-700 transition">Download JPG Global</button>
+                            <button onclick="downloadPDF()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase shadow hover:bg-emerald-700 transition">Download PDF Global</button>
+                            <button onclick="logoutPortal('ukk')" class="bg-slate-200 text-slate-600 px-4 py-2 rounded-lg text-[10px] font-black uppercase hover:bg-slate-300 transition">Kembali</button>
+                        </div>
+                    </div>
+
+                    <div id="ukk-export-area" class="print-area overflow-x-auto p-8 bg-white text-center">
+                        <div class="text-center mb-8">
+                            <h1 class="text-2xl font-black uppercase">JADWAL UJI KOMPETENSI KEJURUAN (UKK)</h1>
+                            <h2 class="text-xl font-bold uppercase">SMK KARYA BAHANA MANDIRI 1 BEKASI</h2>
+                            <p class="text-[10pt] font-semibold uppercase tracking-widest">Program Keahlian: Teknik Kendaraan Ringan Otomotif | TP 2025/2026</p>
+                            <hr class="my-4 border-black border-2">
+                        </div>
+                        <table class="w-full border-collapse border border-black text-center" id="ukk-table-data">
+                            <thead class="bg-slate-100 font-bold uppercase text-center">
+                                <tr class="text-[8pt]">
+                                    <th class="border border-black py-3 px-1 w-8 text-center">NO.</th>
+                                    <th class="border border-black px-2 w-32 text-center">HARI & TANGGAL</th>
+                                    <th class="border border-black px-2 w-36 text-center">SESI & WAKTU KERJA</th>
+                                    <th class="border border-black px-2 w-20 text-center">NIPD</th>
+                                    <th class="border border-black px-3 text-left">NAMA PESERTA UJIAN</th>
+                                    <th class="border border-black px-1 w-8 text-center">L/P</th>
+                                    <th class="border border-black px-2 w-16 text-center">KELAS</th>
+                                    <th class="border border-black px-2 w-24 text-center">RUANG</th>
+                                    <th class="border border-black px-2 w-44 text-red-700 text-center">PENGUJI</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-ukk" class="text-[7.5pt] font-semibold text-center"></tbody>
+                        </table>
+                        <div class="mt-12 flex justify-between items-start w-full px-4 text-left">
+                            <div class="text-[9pt] border-l-4 border-red-600 pl-4 bg-gray-50 py-4 pr-6 max-w-xl text-left">
+                                <p class="font-black underline italic text-red-700 mb-2">CATATAN PENTING PESERTA:</p>
+                                <ul class="space-y-1 text-left">
+                                    <li>1. Peserta Wajib Hadir 15 Menit Sebelum Waktu Sesi Dimulai.</li>
+                                    <li>2. Pakaian Wearpack TKR Lengkap, Bersih & Rapi.</li>
+                                    <li>3. Membawa Kartu Peserta Ujian & Alat Tulis Pribadi.</li>
+                                </ul>
+                            </div>
+                            <div class="text-center text-[10pt] min-w-[250px]">
+                                <p class="mb-1 text-center">Bekasi, 31 Maret 2026</p>
+                                <p class="font-bold text-center">Mengetahui,<br>Kepala Program TKR</p>
+                                <br><br><br><br><br>
+                                <p class="font-black underline uppercase text-center text-center">H. IRWAN RAHMAT, S.T, Gr</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Placeholder Sections -->
+        <section id="mapel-produktif" class="tab-content section-hidden bg-white p-20 rounded-xl shadow text-center text-slate-400">Portal Mapel Produktif</section>
+        <section id="mon-guru" class="tab-content section-hidden bg-white p-20 rounded-xl shadow text-center text-slate-400 text-center">Monitoring Guru</section>
+        <section id="mon-pkl" class="tab-content section-hidden bg-white p-20 rounded-xl shadow text-center text-slate-400 text-center">Monitoring PKL</section>
+        <section id="form-pkl" class="tab-content section-hidden bg-white p-20 rounded-xl shadow text-center text-slate-400 text-center">Form PKL</section>
+        <section id="jadwal-mapel" class="tab-content section-hidden bg-white p-20 rounded-xl shadow text-center text-slate-400 text-center text-center">Jadwal Mapel</section>
+        <section id="rekap-kehadiran" class="tab-content section-hidden bg-white p-20 rounded-xl shadow text-center text-slate-400 text-center text-center text-center text-center text-center">Kehadiran</section>
+        <section id="data-raport" class="tab-content section-hidden bg-white p-20 rounded-xl shadow text-center text-slate-400 text-center text-center text-center text-center text-center text-center">Raport</section>
+        <section id="keterangan" class="tab-content section-hidden bg-white p-20 rounded-xl shadow text-center text-slate-400 text-center text-center text-center text-center text-center text-center text-center">Sistem Terintegrasi</section>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-500 py-10 border-t-4 border-yellow-400 no-print text-center text-center text-center text-center text-center text-center text-center text-center">
+        <p class="font-black text-slate-300 uppercase tracking-widest text-xs mb-2">ATC-TKR PROGRAM HUBIN SMK KBM 1</p>
+        <p class="text-[10px]">&copy; 2026 ATC - TEKNIK KENDARAAN RINGAN | All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // --- 1. DATABASE 159 SISWA UTUH ---
+        const namesTKR1 = ["AHMAD FATIH AL QAISAR", "AHMAD GILANG GOVINDAVA", "AHMAD JAILANI", "AINA SALSHABILA AFFANDI", "AKBAR MAULANA", "AL GANIU", "ALHUDA SAPUTRA", "APRIANSYAH", "APRILIA EKA NABILA", "ARDIAN NUR AFLAH", "ATTHORIQ SHAZADA FAWWAZ", "DEVAN NURRAHMAD", "DYAS RIZKY PADILLAH", "DZAKI JUMAYYIL SANJAYA", "FEBRYANO AHMAD BAHRIZ", "FIO DHARMAWAN", "GARDNER FEBRO PELEALU", "GILANG PERMANA", "HIDAYATULLAH", "IQBAL NUR RIZKI", "JONDRI SINAGA", "M. CAGAR ILHAM", "M. RIVALDY ALFARIZY", "MUHAMAD IHSAN NUDIN", "MUHAMMAD AINUL YAQIN", "MUHAMMAD ATHALLAH ZAHRAN", "MUHAMMAD FATHUR ROZAQ", "MUHAMMAD FURQON", "MUHAMMAD IBNU ABDILLAH", "MUHAMMAD RIZKY ABDUL ROHIM", "NAJAY HAFIFINUR AFLAH", "PANDU PRASETYO", "RADITYA DESVIANO", "RAFY EZAR ALVIAN", "RAHMAT SURYADI", "RANDY BAGUS YUDA R", "REZA FEBY HAYANSYAH", "RIVALDI SAPUTRA", "WILMARD ARFIELD", "YANNUAR ISLAMI PHASYA", "ACHMAD FAUZI"];
+        const namesTKR2 = ["ABDUL SOFIAN", "ADITYA RAMDANI", "AGUNG ZAENI ZULFIKAR", "AHMAD RAMADANI", "AHMAD RASYAD RAMADHAN", "AINNUR RADJA PRAMUDYA F", "ALDI ANGGA PRATAMA", "AMMAR HERDIAN PUTRA S", "ARDIANSYAH", "ARIEL DWI ANDIKA", "BOSIN RAMADHAN", "DEDE YUSUF FIRDAUS", "DIMAS KASELA", "DIMAS RIFALDI", "FACHRIEL ACHMAD SHANDER", "FATHIR KAYSAN KAMIL", "FATHURRAHMAN NUH N", "ILHAM SATRIAN", "JIDAN AZIZ SABILILLAH", "KENJI OGASAWARA M", "MUHAMAD FIKRI ARIFIN", "MUHAMAD FIRDAUS", "MUHAMAD IQBAL", "MUHAMMAD ABDURRAHMAN", "MUHAMMAD ABI SAPUTRA", "MUHAMMAD ALPHA RAZI", "MUHAMMAD IRSYADULARIBI", "MUHAMMAD NABIL ABDILLAH", "MUHAMMAD NUR RIFKI A", "MUHAMMAD REVALDI", "MUHAMMAD RIZKY AKBAR A", "MUHAMMAD RIZKY MAULANA", "MUHAMMAD YAZID AS-SYA'DI", "PIU LA' AL BADI", "RANGGA DARMAWAN P", "RENGGO ANDRIAN SAPUTRA", "RIAN MAULANA", "RIYAN MUSTAKIM", "RIZQI BAGAS PRASETYO", "SIGIT PURNOMO", "VAREL ESA NABILAL K"];
+        const namesTKR3 = ["ADE FIRDAUS", "ADRIAN SAPUTRA", "ALDO", "ALZIDHAN ADITYAN S", "ANUGRAH ABI SAPUTRA", "BANG BANG IRAWAN SENNA", "DAMAR AZHAR ZULFIANSYAH", "DEDE RADITIA", "DONI AGUSTIAN", "FAHRI AKBAR", "GALIH GINANJAR", "HALILINTAR DWI ZAKI", "HAMSYAH LUBIS", "JALALUDIN RIDWAN S", "LUQMAN ALHAKIM", "M. REVAN GUNAWAN", "MISYA RAMANDIKA", "MOHAMMAD ADITYA F", "MUHAMAD ADIANSYAH", "MUHAMAD BADRU ZAMAN", "MUHAMAD RIKEN", "MUHAMAD RIZKY RAMADHAN", "MUHAMMAD AINAL YAKIN", "MUHAMMAD DAFFA RIZKY", "MUHAMMAD GILANG RAMBANI", "MUHAMMAD KEVIN PULUNGAN", "MUHAMMAD SAYPUL", "MUHAMMAD WILDHAN", "MUSTOFA ALIF PUTRA", "NAWWA PRAMUDITA KUSUMA", "RAFI GHANI RAMADHAN", "RAIHAN HEXA FIRDAUS", "RAJA ATHAYA CHAMIRULLAH", "RAKA HARDIANSYAH", "RAMA OKTAVIAN", "REZA AHMAD FADILAH", "RIZKI AKBAR FATDIANSYAH", "RIZKY ANUGRAH"];
+        const namesTKR4 = ["AHMAD RIFAI", "ALFARIUS DHARMA DINATA", "ANDIKA PRATAMA", "ARGA SIBO SRIWIJAYA", "ARYA NOVRI HIDAYAT", "ARYA WIRYANTO", "ARZAQI ALBA BASTIAN", "BINTANG HIDAYAT INDIANTO", "DAFA QURNIA HARYANTO", "DAFI QURNIA HARYANTO", "FAJAR AGUSTIAWAN", "FARID PIRMANSYAH", "FATIH ALIANSYAH RAMADHAN", "FHASYAFA NURDIN IBRAHIM", "HAIKAL RIAWAN", "INDRA MAULANA SUBEKTI", "KHURUNUL BHAHRI TIRTA", "M. SATRIA FIRMANSYAH", "MOCH. RAFFI AKBAR", "MUHAMAD RIDWAN", "MUHAMAD RISKI DERMAWAN", "MUHAMAD SAPUTRA", "MUHAMMAD FARID SYIHABUDIN", "MUHAMMAD IBNU RAFLI", "MUHAMMAD KHOERUL IBAD", "MUHAMMAD NOUVAL NURIMAN", "MUHAMMAD TEDI ZAMSYAH", "PANDU PRADITIYA UTAMA", "RADHITA ARYASYAH", "REZA ADITIA PUTRA", "RIFAI RAIHAN JUHRIANA", "RIZKI DWI ANDIKA", "RIZKI HAIRUL ANWAR", "RIZKY RAHMATULLAH", "SULAIMAN", "SYUJA ARKAAN GUNAWAN", "WAIZ AL QORNI", "YUNUS KURNIAWAN", "ZALFA ALDESTA RAVICKY"];
+
+        const allStudents = [...namesTKR1, ...namesTKR2, ...namesTKR3, ...namesTKR4];
+
+        // --- 2. REVISI HARI & TANGGAL (FIXED: 06 April 2026) ---
+        const scheduleDays = [
+            { tgl: "Senin, 06 April 2026" }, { tgl: "Selasa, 07 April 2026" }, 
+            { tgl: "Rabu, 08 April 2026" }, { tgl: "Kamis, 09 April 2026" },
+            { tgl: "Jumat, 10 April 2026" }, { tgl: "Sabtu, 11 April 2026" },
+            { tgl: "Senin, 13 April 2026" }, { tgl: "Selasa, 14 April 2026" },
+            { tgl: "Rabu, 15 April 2026" }, { tgl: "Kamis, 16 April 2026" }
+        ];
+
+        // --- 3. CORE LOGIC FUNCTIONS ---
+        window.updateWaliKelas = function(kls) {
+            const display = document.getElementById('display-wali-ukk');
+            const waliMap = {
+                "XII TKR 1": "Endang Syaefudin, S.Pd.I, M.Si, Gr",
+                "XII TKR 2": "Efa Laelatus Syarifah, S.Pd, Gr",
+                "XII TKR 3": "Adhitya Anugrah Rizki, S.Pd, Gr",
+                "XII TKR 4": "Euis Puspita Awaliyah, M.Pd, Gr"
+            };
+            display.value = waliMap[kls] || "";
+        };
+
+        window.handleLoginUKK = function() {
+            const inputNama = document.getElementById('input-nama-ukk').value.trim().toUpperCase();
+            const inputKelas = document.getElementById('input-kelas-ukk').value;
+            const inputWali = document.getElementById('display-wali-ukk').value;
+
+            if(!inputNama || !inputKelas) return alert("Harap isi Nama dan pilih Kelas!");
+
+            const sIdx = allStudents.findIndex(n => n.includes(inputNama));
+            if(sIdx === -1) return alert("Siswa tidak ditemukan dalam daftar 159 Peserta UKK.");
+
+            // Success Transition
+            const studentName = allStudents[sIdx];
+            const nipd = "232410" + (100 + sIdx);
+            const dayIdx = Math.floor(sIdx / 16);
+            const dayObj = scheduleDays[dayIdx] || scheduleDays[scheduleDays.length - 1];
+            const isSesi1 = (sIdx % 16 < 8);
+
+            document.getElementById('card-name').innerText = studentName;
+            document.getElementById('card-nipd').innerText = nipd;
+            document.getElementById('card-kelas').innerText = inputKelas;
+            document.getElementById('card-wali').innerText = inputWali;
+            document.getElementById('card-day').innerText = dayObj.tgl;
+            document.getElementById('card-sesi').innerText = isSesi1 ? "SESI 1 (PAGI)" : "SESI 2 (SIANG)";
+            document.getElementById('card-time').innerText = isSesi1 ? "07:00 - 12:00 WIB" : "13:00 - 16:45 WIB";
+
+            document.getElementById('login-ukk-siswa').classList.add('section-hidden');
+            document.getElementById('content-jadwal-ukk').classList.remove('section-hidden');
+            renderTableUKK();
+        };
+
+        window.renderTableUKK = function() {
+            const tbody = document.getElementById('tbody-ukk');
+            if(!tbody) return;
+            const examiners = ["H. Irwan Rahmat, S.T, Gr", "H. Agus Rizky, S.T", "Adhitya A.R, S.T, Gr", "Firmansyah, S.T, Gr", "Defa Andrian, S.T, Gr"];
+            let html = ''; let sIdx = 0; const perDay = Math.ceil(159 / scheduleDays.length);
+            scheduleDays.forEach((day, dIdx) => {
+                const limit = (dIdx === scheduleDays.length - 1) ? 159 : Math.min(159, sIdx + perDay);
+                const batch = limit - sIdx;
+                for (let i = 0; i < batch; i++) {
+                    const studentName = allStudents[sIdx];
+                    const gender = (studentName.includes("APRILIA") || studentName.includes("AINA")) ? "P" : "L";
+                    html += `<tr class="hover:bg-gray-50 border-b border-black text-center">
+                        <td class="border border-black p-1 text-center font-bold">${sIdx + 1}</td>`;
+                    if(i === 0) html += `<td class="border border-black p-1 bg-slate-50 font-bold text-center" rowspan="${batch}">${day.tgl}</td>`;
+                    if(i === 0 || i === 8) {
+                        const sNum = (i < 8) ? "1" : "2";
+                        const sTime = (i < 8) ? "07:00-12:00" : "13:00-16:45";
+                        html += `<td class="border border-black p-1 text-center" rowspan="${(i<8)?Math.min(8,batch):(batch-8)}"><div class="session-title">SESI ${sNum}</div><div class="time-label">${sTime}</div></td>`;
+                    }
+                    html += `<td class="border border-black p-1 font-mono text-center">232410${100+sIdx}</td>
+                        <td class="border border-black p-1 uppercase text-left font-bold">${studentName}</td>
+                        <td class="border border-black p-1 font-black ${gender==='P'?'text-pink-600':''} text-center">${gender}</td>
+                        <td class="border border-black p-1 font-bold text-blue-800 text-center">${sIdx < 42 ? "XII TKR 1" : sIdx < 83 ? "XII TKR 2" : sIdx < 123 ? "XII TKR 3" : "XII TKR 4"}</td>`;
+                    if(i === 0) html += `<td class="border border-black p-1 bg-slate-50 uppercase text-[5pt] text-center font-black" rowspan="${batch}">BENGKEL TKR UTAMA</td>`;
+                    if(sIdx % 4 === 0) html += `<td class="border border-black p-1 font-bold text-red-700 bg-red-50/20 uppercase text-center" rowspan="4">${examiners[Math.floor(sIdx/4)%examiners.length]}</td>`;
+                    html += `</tr>`; sIdx++;
+                }
+            });
+            tbody.innerHTML = html;
+        };
+
+        window.logoutPortal = (type) => { 
+            if(type==='ukk'){ document.getElementById('login-ukk-siswa').classList.remove('section-hidden'); document.getElementById('content-jadwal-ukk').classList.add('section-hidden'); }
+        };
+
+        // --- 4. EXPORT FUNCTIONS ---
+        window.downloadCard = () => html2canvas(document.getElementById('kartu-khusus-area'), { scale: 3 }).then(c => { 
+            const a = document.createElement('a'); a.download='Kartu_UKK_Siswa.jpg'; a.href=c.toDataURL('image/jpeg', 0.95); a.click(); 
+        });
+
+        window.downloadJPGGlobal = () => html2canvas(document.getElementById('ukk-export-area'), { scale: 1.5, useCORS: true }).then(c => {
+            const a = document.createElement('a'); a.download='Jadwal_Global_UKK.jpg'; a.href=c.toDataURL('image/jpeg', 0.8); a.click();
+        });
+
+        window.downloadPDF = () => {
+            const { jsPDF } = window.jspdf;
+            const target = document.getElementById('ukk-export-area');
+            html2canvas(target, { scale: 2, useCORS: true }).then(canvas => {
+                const imgWidth = 210; const pageHeight = 295;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                let heightLeft = imgHeight;
+                const doc = new jsPDF('p', 'mm', 'a4');
+                let position = 0;
+                doc.addImage(canvas.toDataURL('image/png'), 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight; doc.addPage();
+                    doc.addImage(canvas.toDataURL('image/png'), 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+                doc.save('Jadwal_UKK_Official_159_Siswa.pdf');
+            });
+        };
+
+        // --- 5. CLOCK & MARQUEE ---
+        setInterval(() => {
+            const now = new Date();
+            const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            const timeStr = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()} | ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')} WIB`;
+            document.getElementById('current-time-full').innerText = timeStr;
+        }, 1000);
+
+        window.onload = () => {
+            const now = new Date();
+            const hideDate = new Date('2026-04-18');
+            let txt = `<i class="fas fa-rocket"></i> BERGERAK BERSAMA BERSAMA KITA BISA <i class="fas fa-bullhorn"></i> PENGISIAN DATA PKL BATAS AKHIR 30 APRIL 2026 `;
+            if(now < hideDate) txt += `<i class="fas fa-calendar-check"></i> JADWAL UKK RILIS 06 APRIL - 16 APRIL 2026 | CEK KARTU ANDA `;
+            txt += `<i class="fas fa-star"></i> VISI: MENCIPTAKAN SISWA BERAKHLAK, BERPRESTASI DAN SIAP KERJA | ATC TKR KBM 1.`;
+            document.getElementById('running-text').innerHTML = txt;
+        };
+
+        window.switchTab = function(id, btn) {
+            document.querySelectorAll('.tab-content').forEach(s => s.classList.add('section-hidden'));
+            document.getElementById(id).classList.remove('section-hidden');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+        };
+    </script>
+</body>
+</html>
